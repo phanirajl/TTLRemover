@@ -36,6 +36,7 @@ elif [ -r "$CASSANDRA_INCLUDE" ]; then
 fi
 
 
+
 # Use JAVA_HOME if set, otherwise look for java in PATH
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA="$JAVA_HOME/bin/java"
@@ -48,10 +49,10 @@ if [ -z "$CLASSPATH" ]; then
     exit 1
 fi
 
-
-CLASSPATH=$CLASSPATH:./build/libs/TTLRemover-1.0.jar
-
+CLASSPATH=$CLASSPATH:build/libs/TTLRemover-1.0.jar
 "$JAVA" $JAVA_AGENT -cp "$CLASSPATH" $JVM_OPTS -Dstorage-config="$CASSANDRA_CONF" \
         -Dcassandra.storagedir="$cassandra_storagedir" \
         -Dlogback.configurationFile=logback-tools.xml \
-        org.apache.cassandra.noTTL.TTLRemover "$@"
+        org.apache.cassandra.noTTL.TTLRemoverKeyspace "$@"
+
+# vi:ai sw=4 ts=4 tw=0 et

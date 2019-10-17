@@ -4,73 +4,50 @@ SSTable TTLRemover
 
 ### Usage
 
-This tool is implemented based on Cassandra 2.2.
+This tool is implemented based on Cassandra 2.2. Use branch 3.0 for Cassandra 3.0 and Cassandra 3.11.
 
 #### Prerequisite
 1. Java 1.8 is needed.
-
-
-2. Download source code of TTLRemover to `TTLRemover` folder using following command:
-
- `git clone https://github.com/instaclustr/TTLRemover.git TTLRemover`
-
-
-3. Download source code of Cassandra 2.2 to `cassandra-2.2-src` folder using followng command:
-
- `git clone -b cassandra-2.2 git://git.apache.org/cassandra.git cassandra-2.2-src`
-
-
-3. Link `noTTL` folder into the `src/java/org/apache/cassandra/` folder of cassandra using following command:
-
- `ln -s [absolute path to the noTTL folder] [absolute path to src/java/org/apache/cassandra/ folder]`
-
-
-4. Link `TTLRemover` bash script into `tools/bin` folder of cassandra using the following command:
-
- `ln -s [absolute path to the TTLRemover file] [absolute path to tools/bin/ folder]`
  
- Note: you must use absolute path in this command, otherwise some errors would be involved. 
- 
-5. Change mode of `TTLRemover` using following command:
-
- `chmod u+x TTLRemover`
 
 #### Compile
 
-1. Open a terminal and change folder to the cassandra root folder.
+1. Open a terminal and change folder to the repository path.
 
 2. Use the following command to compile the project.
 
- `ant generate-idea-files`
-
+        ./gradlew jar
 
 #### Remove TTL and create new SSTable
 
-1. Change change folder to cassandra/tool/bin and the command for running the tool is as the following:
+1. From base directory of repo run the following. This will create the resulting SSTable in the destination directory with the same generation number.
 
- `./TTLRemover [full path to the sstable folder] -p <output path>`
+        CASSANDRA_HOME=<path_to_cassandra> ./TTLRemover <path_to_SSTable_Data.db> -p <destination_directory>
+ 
+2. To do it on a batch of SSTables, you can use the following command:
 
- Note: your output path must end with `\`. Then, all the ttl-removed sstable is located in the `tools/bin/<output path>`.
+        find [full path to the sstable folder]/*Data.db -type f | xargs -I PATH ./TTLRemover PATH -p <output path>
+ 
+3. Or you can use the command to work on an entire keyspace. 
 
-
-2. To do it on batch, you can use the following command:
-
- `find [full path to the sstable folder]/*Data.db -type f | xargs -I PATH ./TTLRemover PATH -p <output path>`
+        CASSANDRA_HOME=<path_to_cassandra> ./TTLRemoverKeyspace [keyspace path] -p <output path>
  
 
 #### Load ttl-removed SSTable to a new cluster
 
 1. Create the keyspace and table of the target sstable in the new cluster.
 
-
 2. In the source cluster, use the following command to load the ttl-removed SSTable into the new cluster.
 
- `./sstableloader -d <ip address of new cluster node> [path to the ttl-removed sstable folder]`
+        ./sstableloader -d <ip address of new cluster node> [path to the ttl-removed sstable folder]
  
  
 
+#### Further Information
 
+See Danyang Li's blog ["TTLRemover: Tool for Removing Cassandra TTLs for Recovery and Testing Purposes"](https://www.instaclustr.com/ttlremover-tool-for-removing-cassandra-ttls-for-recovery-and-testing-purposes/)
 
+Please see https://www.instaclustr.com/support/documentation/announcements/instaclustr-open-source-project-status/ for Instaclustr support status of this project
 
 
 
